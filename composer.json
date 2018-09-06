@@ -1,0 +1,30 @@
+{
+    "name": "imtigger/laravel-crud-generator",
+    "description": "Laravel CRUD Generator",
+    "license": "mit",
+    "authors": [
+        {
+            "name": "Tiger Fok",
+            "email": "tiger@tiger-workshop.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.0.0",
+        "laravel/framework": "^5.5",
+        "imtigger/laravel-crud": "^0.2||dev-master"
+    },
+    "autoload": {
+        "psr-4": {
+            "Imtigger\\LaravelCRUD\\": "src"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Imtigger\\LaravelCRUD\\LaravelCRUDGeneratorServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
