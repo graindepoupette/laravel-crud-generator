@@ -90,7 +90,7 @@ class MakeCRUD extends Command
 
         if (!$this->option('no-controller') && !$this->option('no-ui')) {
             $this->info("Now add route to config/web.php and run 'laroute:generate'");
-            $this->info("\\Imtigger\\LaravelCRUD\\CRUDController::routes('/{$this->urlName}', '\\{$this->controllerNamespace}\\{$this->controllerName}', '{$this->viewPrefix}');");
+            $this->info("\\{$this->controllerNamespace}\\{$this->controllerName}::routes('/{$this->urlName}', '\\{$this->controllerNamespace}\\{$this->controllerName}', '{$this->viewPrefix}');");
         }
     }
 
