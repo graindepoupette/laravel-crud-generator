@@ -207,10 +207,10 @@ class MakeCRUD extends Command
 
     protected function getStubContent($path)
     {
-        if ($this->fs->exists(resource_path('crud-stubs/' .  $path))) {
-            return $this->fs->get(resource_path('crud-stubs/' .  $path));
+        if ($this->fs->exists(resource_path('crud-stubs/' .  $path . '.stub'))) {
+            return $this->fs->get(resource_path('crud-stubs/' .  $path . '.stub'));
         } else {
-            return $this->fs->get(__DIR__ . '/../../stubs/' . $path);
+            return $this->fs->get(__DIR__ . '/../../stubs/' . $path . '.stub');
         }
     }
 
