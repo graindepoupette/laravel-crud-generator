@@ -1,3 +1,7 @@
 @extends("{$viewPrefix}.form")
 
 @section('page-title', trans('backend.action.show', ['name' => trans($entityName)]))
+
+@push('breadcrumb')
+    <li class="breadcrumb-item">{{ trans('backend.action.show', ['name' => trans($entityName)]) }}</li>
+@endpush

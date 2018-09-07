@@ -1,5 +1,44 @@
-@extends('admin.layout')
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-@prepend('breadcrumb')
-<li class="breadcrumb-item">{{ trans($entityName) }}</li>
-@endprepend
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
+
+    <title>Laravel CRUD Demo</title>
+</head>
+<body>
+<main role="main" class="container">
+    <h1 class="mt-5">Laravel CRUD Demo</h1>
+
+    <!-- Breadcrumb -->
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">CRUD</li>
+        @stack('breadcrumb')
+    </ol>
+
+    <div class="d-flex justify-content-end p-3">
+        @section('actions')
+        @show
+    </div>
+
+    <div class="container-fluid">
+        @section('content')
+        @show
+    </div>
+</main>
+
+<script
+        src="https://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+        crossorigin="anonymous"></script>
+<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+
+@stack('js')
+
+</body>
+</html>
