@@ -87,8 +87,8 @@ class MakeCRUD extends Command
         $this->info("CRUD Generated successfully.");
 
         if (!$this->option('no-controller') && !$this->option('no-ui')) {
-            $this->info("Now add route to config/web.php and run 'laroute:generate'");
-            $this->info("\\{$this->controllerNamespace}\\{$this->controllerName}::routes('/{$this->urlName}', '\\{$this->controllerNamespace}\\{$this->controllerName}', '{$this->viewPrefix}');");
+            $this->info("Now please add route to config/web.php");
+            $this->warn("\\{$this->controllerNamespace}\\{$this->controllerName}::routes('/{$this->urlName}', '\\{$this->controllerNamespace}\\{$this->controllerName}', '{$this->viewPrefix}');");
         }
     }
 
@@ -131,7 +131,7 @@ class MakeCRUD extends Command
             $content = $this->getStubContent("views/{$filename}");
             $content = $this->replaceTokens($content);
             file_put_contents("{$viewDirectoryPath}/{$filename}", $content);
-            $this->info("Created View: {$viewDirectoryPath}/{$filename}");
+            $this->line("Created View: {$viewDirectoryPath}/{$filename}");
         }
     }
 
@@ -143,7 +143,7 @@ class MakeCRUD extends Command
         $content = $this->replaceTokens($content);
         file_put_contents("{$this->controllerPath}", $content);
 
-        $this->info("Created Controller: {$this->controllerPath}");
+        $this->line("Created Controller: {$this->controllerPath}");
     }
 
     protected function compileModel($name)
@@ -167,7 +167,7 @@ class MakeCRUD extends Command
 
         file_put_contents("{$this->modelPath}", $content);
 
-        $this->info("Created Model: {$this->modelPath}");
+        $this->line("Created Model: {$this->modelPath}");
     }
 
     protected function compileForm($name)
@@ -178,7 +178,7 @@ class MakeCRUD extends Command
         $content = $content = $this->replaceTokens($content);
         file_put_contents("{$this->formPath}", $content);
 
-        $this->info("Created Form: {$this->formPath}");
+        $this->line("Created Form: {$this->formPath}");
     }
 
     protected function compileMigration($name)
@@ -202,7 +202,7 @@ class MakeCRUD extends Command
 
         file_put_contents("{$this->migrationPath}", $content);
 
-        $this->info("Created Migration: {$this->migrationPath}");
+        $this->line("Created Migration: {$this->migrationPath}");
     }
 
     protected function getStubContent($path)
