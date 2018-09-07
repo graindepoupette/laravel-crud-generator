@@ -19,7 +19,9 @@ class LaravelCRUDGeneratorServiceProvider extends ServiceProvider
 
     public function boot()
     {
-        
+        $this->publishes([
+            __DIR__.'/stubs' => resource_path('crud-stubs')
+        ]);
     }
 
 }

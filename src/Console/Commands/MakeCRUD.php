@@ -2,8 +2,6 @@
 
 namespace Imtigger\LaravelCRUD\Console\Commands;
 
-use Artisan;
-use DB;
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
 
@@ -209,7 +207,11 @@ class MakeCRUD extends Command
 
     protected function getStubContent($path)
     {
-        return $this->fs->get(__DIR__ . '/../../stubs/' . $path);
+        if ($this->fs->exists(resource_path('crud-stubs/' .  $path))) {
+            return $this->fs->get(resource_path('crud-stubs/' .  $path));
+        } else {
+            return $this->fs->get(__DIR__ . '/../../stubs/' . $path);
+        }
     }
 
     protected function replaceTokens($content)
