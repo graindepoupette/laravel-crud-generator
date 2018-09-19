@@ -12,7 +12,7 @@ class MakeCRUDHeader extends CRUDCommand
      *
      * @var string
      */
-    protected $signature = 'make:crud:header {table}';
+    protected $signature = 'make:crud:header {name}';
 
     /**
      * The console command description.
