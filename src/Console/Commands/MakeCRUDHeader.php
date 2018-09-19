@@ -5,7 +5,7 @@ namespace Imtigger\LaravelCRUD\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
-class MakeCRUDHeader extends Command
+class MakeCRUDHeader extends CRUDCommand
 {
     /**
      * The name and signature of the console command.
@@ -38,17 +38,16 @@ class MakeCRUDHeader extends Command
      */
     public function handle()
     {
-        $table = $this->argument('table');
-        $singular = str_singular($table);
+		$this->init();
 
-        $columns = DB::getDoctrineSchemaManager()->listTableColumns($table);
+        $columns = DB::getDoctrineSchemaManager()->listTableColumns($this->tableName);
 
         if (sizeof($columns) == 0) {
-            $this->error("Table `$table` not found");
+            $this->error("Table `{$this->tableName}` not found");
         }
 
-        foreach ($columns as $name => $column) {
-            $this->line("<th data-data=\"{$name}\">{{ trans('backend.{$singular}.label.{$name}') }}</th>");
+        foreach ($columns as $name => $column) {			
+            $this->line("<th data-data=\"{$name}\">{{ trans('backend.{$this->nameSingular}.label.{$name}') }}</th>");
         }
     }
 }

@@ -14,6 +14,7 @@ class LaravelCRUDGeneratorServiceProvider extends ServiceProvider
     {
         $this->commands(\Imtigger\LaravelCRUD\Console\Commands\MakeCRUD::class);
         $this->commands(\Imtigger\LaravelCRUD\Console\Commands\MakeCRUDHeader::class);
+		$this->commands(\Imtigger\LaravelCRUD\Console\Commands\MakeCRUDForm::class);
         $this->commands(\Imtigger\LaravelCRUD\Console\Commands\MakeCRUDTranslations::class);
     }
 

@@ -5,7 +5,7 @@ namespace Imtigger\LaravelCRUD\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
 
-class MakeCRUD extends Command
+class MakeCRUD extends CRUDCommand
 {
     /**
      * The name and signature of the console command.
@@ -30,18 +30,6 @@ class MakeCRUD extends Command
      */
     protected $description = 'Generate CRUD Controller/Model/Migration/View';
     protected $softDelete = true;
-    protected $indentation = '    ';
-
-    /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct(Filesystem $fs)
-    {
-        $this->fs = $fs;
-        parent::__construct();
-    }
 
     /**
      * Execute the console command.
@@ -50,32 +38,11 @@ class MakeCRUD extends Command
      */
     public function handle()
     {
+		$this->init();
+		
         if ($this->option('no-soft-delete')) {
             $this->softDelete = false;
         }
-
-        $this->name = $this->argument('name');
-        $this->nameNormalized = str_singular($this->name);
-        $this->nameSingular = str_singular($this->name);
-        $this->namePlural = str_plural($this->name);
-
-        $this->modelNamespace = 'App\\Models';
-        $this->formNamespace = 'App\\Forms';
-        $this->controllerNamespace = 'App\\Http\\Controllers\\Admin';
-
-        $this->urlName = snake_case($this->nameNormalized);
-        $this->viewPrefix = 'admin.' . snake_case($this->nameNormalized);
-        $this->routePrefix = 'admin.' . snake_case($this->nameNormalized);
-        $this->permissionPrefix = snake_case($this->nameNormalized);
-        $this->translationPrefix = 'backend.' . snake_case($this->nameNormalized) . '.label';
-
-        $this->controllerName = studly_case($this->nameNormalized) . 'Controller';
-        $this->modelName = studly_case($this->nameNormalized);
-        $this->formName = studly_case($this->nameNormalized) . 'Form';
-        $this->migrationName = 'Create' . studly_case($this->namePlural) . 'Table';
-        $this->tableName = snake_case($this->namePlural);
-        $this->entityName = title_case(str_replace('_', ' ', snake_case($this->nameNormalized)));
-        $this->internalName = snake_case($this->nameNormalized);
 
         if (!$this->option('no-view') && !$this->option('no-ui')) $this->compileView($this->nameNormalized);
         if (!$this->option('no-controller') && !$this->option('no-ui')) $this->compileController($this->nameNormalized);
@@ -175,7 +142,20 @@ class MakeCRUD extends Command
         $this->formPath = $this->getFormPath($this->formNamespace . '/' . $this->formName);
 
         $content = $this->getStubContent("Form.php");
-        $content = $content = $this->replaceTokens($content);
+        $content = $this->replaceTokens($content);
+		
+		$formContent = '';
+		$formContent .= str_repeat($this->indentation, 2) . "\$this->add('name', 'text', [" . PHP_EOL;
+		$formContent .= str_repeat($this->indentation, 3) . "'label' => trans('\$TRANSLATION_PREFIX$.name')," . PHP_EOL;
+		$formContent .= str_repeat($this->indentation, 3) . "'rules' => ['required', 'max:255']" . PHP_EOL;
+		$formContent .= str_repeat($this->indentation, 2) . "]);" . PHP_EOL;
+		
+		$content = strtr($content, [
+            '$FORM_CONTENT$' => $formContent
+        ]);
+		
+        $content = $this->replaceTokens($content);
+		
         file_put_contents("{$this->formPath}", $content);
 
         $this->line("Created Form: {$this->formPath}");
@@ -203,33 +183,5 @@ class MakeCRUD extends Command
         file_put_contents("{$this->migrationPath}", $content);
 
         $this->line("Created Migration: {$this->migrationPath}");
-    }
-
-    protected function getStubContent($path)
-    {
-        if ($this->fs->exists(resource_path('crud-stubs/' .  $path . '.stub'))) {
-            return $this->fs->get(resource_path('crud-stubs/' .  $path . '.stub'));
-        } else {
-            return $this->fs->get(__DIR__ . '/../../stubs/' . $path . '.stub');
-        }
-    }
-
-    protected function replaceTokens($content)
-    {
-        $map = [
-            '$CONTROLLER_NAME$' => $this->controllerName,
-            '$MODEL_NAME$' => $this->modelName,
-            '$FORM_NAME$' => $this->formName,
-            '$MIGRATION_NAME$' => $this->migrationName,
-            '$TABLE_NAME$' => $this->tableName,
-            '$VIEW_PREFIX$' => $this->viewPrefix,
-            '$ROUTE_PREFIX$' => $this->routePrefix,
-            '$PERMISSION_PREFIX$' => $this->permissionPrefix,
-            '$TRANSLATION_PREFIX$' => $this->translationPrefix,
-            '$INTERNAL_NAME$' => $this->internalName,
-            '$ENTITY_NAME$' => $this->entityName,
-        ];
-
-        return strtr($content, $map);
     }
 }

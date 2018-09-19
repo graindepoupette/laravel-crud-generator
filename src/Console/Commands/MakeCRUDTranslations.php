@@ -5,7 +5,7 @@ namespace Imtigger\LaravelCRUD\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
-class MakeCRUDTranslations extends Command
+class MakeCRUDTranslations extends CRUDCommand
 {
     /**
      * The name and signature of the console command.
