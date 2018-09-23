@@ -124,8 +124,12 @@ class MakeCRUD extends CRUDCommand
                 $viewHeaders  = '';
 
                 foreach ($columns as $name => $column) {
+                    if (in_array($name, ['deleted_at'])) continue;
+
                     $viewHeaders .= str_repeat($this->indentation, 3) . "<th data-data=\"{$name}\">{{ trans('\$TRANSLATION_PREFIX$.{$name}') }}</th>" . PHP_EOL;
                 }
+
+                $viewHeaders .= str_repeat($this->indentation, 3) . '<th data-data="actions" data-searchable="false" data-sortable="false" data-class-name="text-center" width="180">{{ trans(\'$TRANSLATION_PREFIX$.actions\') }}</th>' . PHP_EOL;
             } else {
                 $viewHeaders = '';
                 $viewHeaders .= str_repeat($this->indentation, 3) . '<th data-data="id" width="50">{{ trans(\'$TRANSLATION_PREFIX$.id\') }}</th>' . PHP_EOL;
@@ -191,7 +195,7 @@ class MakeCRUD extends CRUDCommand
 
         file_put_contents("{$this->modelPath}", $content);
 
-        $this->line("Created Model: {$this->modelPath}");
+        $this->line("Created Model: {$this->modelPath} from " . ($tableExists ? 'table' : 'placeholder'));
     }
 
     protected function compileForm($name)
