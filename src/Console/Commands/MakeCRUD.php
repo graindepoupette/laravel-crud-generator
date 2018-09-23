@@ -16,6 +16,7 @@ class MakeCRUD extends CRUDCommand
     protected $signature = '
     make:crud {name} 
     {--form : (Re)generate only form}
+    {--view : (Re)generate only view}
     {--no-model : Generates no model} 
     {--no-view : Generates no view} 
     {--no-controller : Generates no controller}
@@ -30,7 +31,7 @@ class MakeCRUD extends CRUDCommand
      *
      * @var string
      */
-    protected $description = 'Generate CRUD Controller/Model/Migration/View';
+    protected $description = 'Generate CRUD Controller/Model/Migration/View/Form';
     protected $softDelete = true;
 
     /**
@@ -48,6 +49,11 @@ class MakeCRUD extends CRUDCommand
 
         if ($this->option('form')) {
             $this->compileForm($this->nameNormalized);
+            return;
+        }
+
+        if ($this->option('view')) {
+            $this->compileView($this->nameNormalized);
             return;
         }
 
@@ -101,9 +107,32 @@ class MakeCRUD extends CRUDCommand
         $viewDirectoryPath = $this->getViewPath($name);
         \File::makeDirectory($viewDirectoryPath, 0755, true, true);
 
+        $columns = DB::getDoctrineSchemaManager()->listTableColumns($this->tableName);
+        $tableExists = sizeof($columns) != 0;
+
         foreach(['layout.blade.php', 'form.blade.php', 'index.blade.php', 'create.blade.php', 'edit.blade.php', 'show.blade.php', 'delete.blade.php'] As $filename) {
             $content = $this->getStubContent("views/{$filename}");
             $content = $this->replaceTokens($content);
+
+            if ($tableExists) {
+                $viewHeaders  = '';
+
+                foreach ($columns as $name => $column) {
+                    $viewHeaders .= str_repeat($this->indentation, 3) . "<th data-data=\"{$name}\">{{ trans('\$TRANSLATION_PREFIX$.{$name}') }}</th>" . PHP_EOL;
+                }
+            } else {
+                $viewHeaders = '';
+                $viewHeaders .= str_repeat($this->indentation, 3) . '<th data-data="id" width="50">{{ trans(\'$TRANSLATION_PREFIX$.id\') }}</th>' . PHP_EOL;
+                $viewHeaders .= str_repeat($this->indentation, 3) . '<th data-data="name">{{ trans(\'$TRANSLATION_PREFIX$.name\') }}</th>' . PHP_EOL;
+                $viewHeaders .= str_repeat($this->indentation, 3) . '<th data-data="actions" data-searchable="false" data-sortable="false" data-class-name="text-center" width="180">{{ trans(\'$TRANSLATION_PREFIX$.actions\') }}</th>' . PHP_EOL;
+            }
+
+            $content = strtr($content, [
+                '$VIEW_HEADERS$' => $viewHeaders
+            ]);
+
+            $content = $this->replaceTokens($content);
+
             file_put_contents("{$viewDirectoryPath}/{$filename}", $content);
             $this->line("Created View: {$viewDirectoryPath}/{$filename}");
         }
