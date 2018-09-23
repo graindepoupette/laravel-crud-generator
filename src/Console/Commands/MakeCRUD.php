@@ -16,6 +16,7 @@ class MakeCRUD extends CRUDCommand
     protected $signature = '
     make:crud {name} 
     {--form : (Re)generate only form}
+    {--model : (Re)generate only model}
     {--view : (Re)generate only view}
     {--no-model : Generates no model} 
     {--no-view : Generates no view} 
@@ -49,6 +50,11 @@ class MakeCRUD extends CRUDCommand
 
         if ($this->option('form')) {
             $this->compileForm($this->nameNormalized);
+            return;
+        }
+
+        if ($this->option('model')) {
+            $this->compileModel($this->nameNormalized);
             return;
         }
 
@@ -134,7 +140,7 @@ class MakeCRUD extends CRUDCommand
             $content = $this->replaceTokens($content);
 
             file_put_contents("{$viewDirectoryPath}/{$filename}", $content);
-            $this->line("Created View: {$viewDirectoryPath}/{$filename}");
+            $this->line("Created View: {$viewDirectoryPath}/{$filename} from " . ($tableExists ? 'table' : 'placeholder'));
         }
     }
 
@@ -162,7 +168,22 @@ class MakeCRUD extends CRUDCommand
             $modelContent .= PHP_EOL;
         }
 
-        $modelContent .= $this->indentation . 'protected $fillable = [\'name\'];';
+        $columns = DB::getDoctrineSchemaManager()->listTableColumns($this->tableName);
+        $tableExists = sizeof($columns) != 0;
+
+        if ($tableExists) {
+            $fields = array_keys($columns);
+        } else {
+            $fields = ['name'];
+        }
+
+        $fields = array_diff($fields, ['id', 'deleted_at', 'updated_at', 'created_at']);
+
+        array_walk($fields, function (&$field) {
+            $field = "'{$field}'";
+        });
+
+        $modelContent .= $this->indentation . 'protected $fillable = [' . implode(', ', $fields) . '];';
 
         $content = strtr($content, [
             '$MODEL_CONTENT$' => $modelContent
