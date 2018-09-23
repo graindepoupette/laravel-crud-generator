@@ -12,7 +12,7 @@ class MakeCRUDTranslations extends CRUDCommand
      *
      * @var string
      */
-    protected $signature = 'make:crud:trans';
+    protected $signature = 'make:crud:trans {--export} {--group=backend}';
 
     /**
      * The console command description.
@@ -51,5 +51,11 @@ class MakeCRUDTranslations extends CRUDCommand
         }
 
         $this->info(sizeof($rows) . ' rows updated');
+
+        if ($this->option('export')) {
+            $this->call('translations:export', [
+                'group' => $this->option('group')
+            ]);
+        }
     }
 }
