@@ -4,6 +4,7 @@ namespace Imtigger\LaravelCRUD\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Facades\DB;
 
 class MakeCRUD extends CRUDCommand
 {
@@ -14,6 +15,7 @@ class MakeCRUD extends CRUDCommand
      */
     protected $signature = '
     make:crud {name} 
+    {--form : (Re)generate only form}
     {--no-model : Generates no model} 
     {--no-view : Generates no view} 
     {--no-controller : Generates no controller}
@@ -42,6 +44,11 @@ class MakeCRUD extends CRUDCommand
 		
         if ($this->option('no-soft-delete')) {
             $this->softDelete = false;
+        }
+
+        if ($this->option('form')) {
+            $this->compileForm($this->nameNormalized);
+            return;
         }
 
         if (!$this->option('no-view') && !$this->option('no-ui')) $this->compileView($this->nameNormalized);
@@ -143,13 +150,43 @@ class MakeCRUD extends CRUDCommand
 
         $content = $this->getStubContent("Form.php");
         $content = $this->replaceTokens($content);
-		
-		$formContent = '';
-		$formContent .= str_repeat($this->indentation, 2) . "\$this->add('name', 'text', [" . PHP_EOL;
-		$formContent .= str_repeat($this->indentation, 3) . "'label' => trans('\$TRANSLATION_PREFIX$.name')," . PHP_EOL;
-		$formContent .= str_repeat($this->indentation, 3) . "'rules' => ['required', 'max:255']" . PHP_EOL;
-		$formContent .= str_repeat($this->indentation, 2) . "]);" . PHP_EOL;
-		
+
+        $columns = DB::getDoctrineSchemaManager()->listTableColumns($this->tableName);
+        $tableExists = sizeof($columns) != 0;
+
+        if ($tableExists) {
+            $formContent = '';
+            foreach ($columns as $name => $column) {
+                if (in_array($name, ['id', 'deleted_at', 'created_at', 'updated_at'])) continue;
+
+                $rules = [];
+                if ($column->getNotnull()) {
+                    $rules[] = 'required';
+                }
+                if (get_class($column->getType()) == \Doctrine\DBAL\Types\StringType::class) {
+                    $rules[] = 'max:' . $column->getLength();
+                }
+
+                array_walk($rules, function (&$value) {
+                    $value = "'{$value}'";
+                });
+
+                $rulesString = implode(', ', $rules);
+
+                $formContent .= str_repeat($this->indentation, 2) . "\$this->add('{$name}', 'text', [" . PHP_EOL;
+                $formContent .= str_repeat($this->indentation, 3) . "'label' => trans('\$TRANSLATION_PREFIX$.{$name}')," . PHP_EOL;
+                $formContent .= str_repeat($this->indentation, 3) . "'rules' => [{$rulesString}]" . PHP_EOL;
+                $formContent .= str_repeat($this->indentation, 2) . "]);" . PHP_EOL;
+                $formContent .= PHP_EOL;
+            }
+        } else {
+            $formContent = '';
+            $formContent .= str_repeat($this->indentation, 2) . "\$this->add('name', 'text', [" . PHP_EOL;
+            $formContent .= str_repeat($this->indentation, 3) . "'label' => trans('\$TRANSLATION_PREFIX$.name')," . PHP_EOL;
+            $formContent .= str_repeat($this->indentation, 3) . "'rules' => ['required', 'max:255']" . PHP_EOL;
+            $formContent .= str_repeat($this->indentation, 2) . "]);" . PHP_EOL;
+        }
+
 		$content = strtr($content, [
             '$FORM_CONTENT$' => $formContent
         ]);
@@ -158,7 +195,7 @@ class MakeCRUD extends CRUDCommand
 		
         file_put_contents("{$this->formPath}", $content);
 
-        $this->line("Created Form: {$this->formPath}");
+        $this->line("Created Form: {$this->formPath} from " . ($tableExists ? 'table' : 'placeholder'));
     }
 
     protected function compileMigration($name)
