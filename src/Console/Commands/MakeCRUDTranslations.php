@@ -11,7 +11,7 @@ class MakeCRUDTranslations extends CRUDCommand
      *
      * @var string
      */
-    protected $signature = 'make:crud:trans {--export} {--group=backend}';
+    protected $signature = 'make:crud:trans {--export : Export translation immediately} {--group=backend : Translation group}';
 
     /**
      * The console command description.
