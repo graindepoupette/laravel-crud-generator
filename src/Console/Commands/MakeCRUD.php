@@ -2,8 +2,6 @@
 
 namespace Imtigger\LaravelCRUD\Console\Commands;
 
-use Illuminate\Console\Command;
-use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\DB;
 
 class MakeCRUD extends CRUDCommand
@@ -42,8 +40,8 @@ class MakeCRUD extends CRUDCommand
      */
     public function handle()
     {
-		$this->init();
-		
+        $this->init();
+
         if ($this->option('no-soft-delete')) {
             $this->softDelete = false;
         }
@@ -82,19 +80,19 @@ class MakeCRUD extends CRUDCommand
     protected function getControllerPath($name)
     {
         $name = str_replace_first($this->laravel->getNamespace(), '', $name);
-        return $this->laravel['path'].'/'.str_replace('\\', '/', $name).'.php';
+        return $this->laravel['path'] . '/' . str_replace('\\', '/', $name) . '.php';
     }
 
     protected function getModelPath($name)
     {
         $name = str_replace_first($this->laravel->getNamespace(), '', $name);
-        return $this->laravel['path'].'/'.str_replace('\\', '/', $name).'.php';
+        return $this->laravel['path'] . '/' . str_replace('\\', '/', $name) . '.php';
     }
 
     protected function getFormPath($name)
     {
         $name = str_replace_first($this->laravel->getNamespace(), '', $name);
-        return $this->laravel['path'].'/'.str_replace('\\', '/', $name).'.php';
+        return $this->laravel['path'] . '/' . str_replace('\\', '/', $name) . '.php';
     }
 
     protected function getViewPath($name)
@@ -116,12 +114,12 @@ class MakeCRUD extends CRUDCommand
         $columns = DB::getDoctrineSchemaManager()->listTableColumns($this->tableName);
         $tableExists = sizeof($columns) != 0;
 
-        foreach(['layout.blade.php', 'form.blade.php', 'index.blade.php', 'create.blade.php', 'edit.blade.php', 'show.blade.php', 'delete.blade.php'] As $filename) {
+        foreach (['layout.blade.php', 'form.blade.php', 'index.blade.php', 'create.blade.php', 'edit.blade.php', 'show.blade.php', 'delete.blade.php'] As $filename) {
             $content = $this->getStubContent("views/{$filename}");
             $content = $this->replaceTokens($content);
 
             if ($tableExists) {
-                $viewHeaders  = '';
+                $viewHeaders = '';
 
                 foreach ($columns as $name => $column) {
                     if (in_array($name, ['deleted_at'])) continue;
@@ -241,12 +239,12 @@ class MakeCRUD extends CRUDCommand
             $formContent .= str_repeat($this->indentation, 2) . "]);" . PHP_EOL;
         }
 
-		$content = strtr($content, [
+        $content = strtr($content, [
             '$FORM_CONTENT$' => $formContent
         ]);
-		
+
         $content = $this->replaceTokens($content);
-		
+
         file_put_contents("{$this->formPath}", $content);
 
         $this->line("Created Form: {$this->formPath} from " . ($tableExists ? 'table' : 'placeholder'));
