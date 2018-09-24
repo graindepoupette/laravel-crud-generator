@@ -30,6 +30,9 @@ Arguments:
   name
 
 Options:
+      --form            (Re)generate only form
+      --model           (Re)generate only model
+      --view            (Re)generate only view
       --no-model        Generates no model
       --no-view         Generates no view
       --no-controller   Generates no controller
@@ -39,18 +42,11 @@ Options:
       --no-ui           Shortcut for --no-view, --no-controller and --no-form
 ```
 
-Edit generated migrations and run `php artisan migrate`
-
-## Generate Datatable header for index.blade.php view 
-
-```
-php artisan make:crud:header --help
-Usage:
-  make:crud:header <table>
-
-Arguments:
-  table
-```
+Workflow
+1. `php artisan make:crud Animal`
+2. Edit generated migrations and run `php artisan migrate`
+3. `php artisan migrate`
+4. (Optional) `php artisan make:crud --[form|model|view]` to regenerate Form/Model/View from actual database
 
 ## Generate translation string for Laravel Translate Manager
 
@@ -58,5 +54,9 @@ Arguments:
 php artisan make:crud:trans --help
 Usage:
   make:crud:trans
+  
+Options:
+  --export          Export translation immediately
+  --group[=GROUP]   Translation group [default: "backend"]
 ```
 
