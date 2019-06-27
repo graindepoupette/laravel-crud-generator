@@ -47,16 +47,3 @@ Workflow
 2. Edit generated migrations and run `php artisan migrate`
 3. `php artisan migrate`
 4. (Optional) `php artisan make:crud --[form|model|view]` to regenerate Form/Model/View from actual database
-
-## Generate translation string for Laravel Translate Manager
-
-```
-php artisan make:crud:trans --help
-Usage:
-  make:crud:trans
-  
-Options:
-  --export          Export translation immediately
-  --group[=GROUP]   Translation group [default: "backend"]
-```
-
