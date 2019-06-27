@@ -13,7 +13,6 @@ class LaravelCRUDGeneratorServiceProvider extends ServiceProvider
     public function register()
     {
         $this->commands(\Imtigger\LaravelCRUD\Console\Commands\MakeCRUD::class);
-        $this->commands(\Imtigger\LaravelCRUD\Console\Commands\MakeCRUDTranslations::class);
     }
 
     public function boot()

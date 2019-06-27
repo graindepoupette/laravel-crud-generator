@@ -12,8 +12,8 @@ class CRUDCommand extends Command
     public function init()
     {
         $this->fs = new Filesystem();
-		
-		$this->name = $this->argument('name');
+
+        $this->name = $this->argument('name');
         $this->nameNormalized = str_singular($this->name);
         $this->nameSingular = str_singular($this->name);
         $this->namePlural = str_plural($this->name);
