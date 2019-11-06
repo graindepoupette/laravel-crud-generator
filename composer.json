@@ -10,7 +10,7 @@
     ],
     "require": {
         "php": ">=7.0.0",
-        "laravel/framework": "^5.5",
+        "laravel/framework": "^5.5|^6.0",
         "imtigger/laravel-crud": ">=0.5||dev-master"
     },
     "autoload": {
